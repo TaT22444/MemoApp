@@ -1,18 +1,22 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 
+import { Link } from 'expo-router'
+
 import Icon from './Icon'
 
 const MemoListItem = (): JSX.Element => {
   return (
-    <View style={styles.memoListItem}>
-      <View>
-        <Text style={styles.memoListItemTitle}>買い物リスト</Text>
-        <Text style={styles.memoListItemDate}>2024年3月31日 10:00</Text>
-      </View>
-      <TouchableOpacity>
-        <Icon name='check' size={32} color='#b0b0b0' />
+    <Link href='/memo/detail' asChild>
+      <TouchableOpacity style={styles.memoListItem}>
+        <View>
+          <Text style={styles.memoListItemTitle}>買い物リスト</Text>
+          <Text style={styles.memoListItemDate}>2024年3月31日 10:00</Text>
+        </View>
+        <TouchableOpacity>
+          <Icon name='check' size={32} color='#b0b0b0' />
+        </TouchableOpacity>
       </TouchableOpacity>
-    </View>
+    </Link>
   )
 }
 
