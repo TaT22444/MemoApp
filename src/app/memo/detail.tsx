@@ -1,11 +1,13 @@
 import { View, Text, ScrollView, StyleSheet } from 'react-native'
-
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import { onSnapshot, doc } from 'firebase/firestore'
+import { useState, useEffect } from 'react'
 
 // import { Feather } from '@expo/vector-icons'
 import Icon from '../../components/Icon'
-
 import CircleButton from '../../components/CircleButton'
+import { auth, db } from '../../config'
+import { type Memo } from '../../../types/memo'
 
 const handlePress = (): void => {
   // login
@@ -13,18 +15,32 @@ const handlePress = (): void => {
 }
 
 const Detail = (): JSX.Element => {
+  const { id } = useLocalSearchParams()
+  console.log(id)
+  const [memo, setMemo] = useState<Memo | null>(null)
+  useEffect(() => {
+    if (auth.currentUser === null) { return }
+    const ref = doc(db, `users/${auth.currentUser.uid}/memos`, String(id))
+    const unsubscribe = onSnapshot(ref, (memoDoc) => {
+      const { bodyText, updatedAt } = memoDoc.data() as Memo
+      setMemo({
+        id: memoDoc.id,
+        bodyText,
+        updatedAt
+      })
+    })
+    return unsubscribe
+  }, [])
   return (
     <View style={styles.container}>
       <View style={styles.memoHeader}>
-        <Text style={styles.memoTitle}>買い物リスト</Text>
-        <Text style={styles.memoDate}>2024/03/31 10:10</Text>
+        <Text style={styles.memoTitle} numberOfLines={1}>{memo?.bodyText}</Text>
+        <Text style={styles.memoDate}>{memo?.updatedAt?.toDate().toLocaleString('ja-JP')}</Text>
       </View>
 
       <ScrollView style={styles.memoBody}>
         <Text style={styles.memoBodyText}>
-          買い物リスト
-          ここにテキストが入りますここにテキストが入ります。
-          ここにテキストが入りますここにテキストが入りますここにテキストが入りますここにテキストが入りますここにテキストが入ります。
+          {memo?.bodyText}
         </Text>
       </ScrollView>
       <CircleButton onPress={handlePress} style={{ top: 50, bottom: 'auto' }}>
@@ -58,13 +74,13 @@ const styles = StyleSheet.create({
     lineHeight: 16
   },
   memoBody: {
-    paddingHorizontal: 24,
-    paddingVertical: 32
+    paddingHorizontal: 24
   },
   memoBodyText: {
     fontSize: 16,
     lineHeight: 24,
-    color: '#000000'
+    color: '#000000',
+    paddingVertical: 32
   }
 })
 
