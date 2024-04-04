@@ -9,6 +9,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth'
 import { auth } from '../../config'
 
 import Btn from '../../components/btn'
+import Guest from './guest'
 
 const handlePress = (email: string, password: string): void => {
   // signin
@@ -29,6 +30,40 @@ const handlePress = (email: string, password: string): void => {
 const SignUp = (): JSX.Element => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const handleSignUp = async (email: string, password: string): Promise<void> => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      console.log('User signed up with UID:', userCredential.user.uid)
+
+      // ゲストログイン時に保存されたゲストUIDを取得
+      const guestUID = localStorage.getItem('guestUID')
+
+      // ゲストUIDが存在する場合は、ゲストログイン時のデータを移行する処理をここに記述
+      if (guestUID) {
+        console.log('Guest UID:', guestUID)
+        // ゲストログイン時のデータの移行処理を行う
+      }
+
+      // サインアップ成功後、リダイレクト
+      router.replace('/memo/list')
+    } catch (error) {
+      console.error('Sign up error:', error)
+      Alert.alert('Sign up error:', error.message)
+    }
+  }
+
+  // ボタンが押された時の処理を定義
+  const handleUp = (): void => {
+    handleSignUp(email, password)
+      .then(() => {
+        // サインアップ成功時の処理
+      })
+      .catch((error) => {
+        // サインアップ失敗時の処理
+        console.error('Sign up error:', error)
+        Alert.alert('Sign up error:', error.message)
+      })
+  }
   return (
     <View style={styles.container}>
       <View style={styles.inner}>
@@ -51,6 +86,7 @@ const SignUp = (): JSX.Element => {
           placeholder='Password'
           textContentType='password'
         />
+        <Btn label="signIn" onPress={handleUp} />
         <Btn label='Submit' onPress={() => { handlePress(email, password) }} />
         <View style={styles.footer}>
           <Text style={styles.footerText}>Already registered?</Text>
@@ -60,6 +96,7 @@ const SignUp = (): JSX.Element => {
             </TouchableOpacity>
           </Link>
         </View>
+        <Guest />
       </View>
     </View>
   )

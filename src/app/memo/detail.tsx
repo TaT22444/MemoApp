@@ -9,13 +9,13 @@ import CircleButton from '../../components/CircleButton'
 import { auth, db } from '../../config'
 import { type Memo } from '../../../types/memo'
 
-const handlePress = (): void => {
+const handlePress = (id: string): void => {
   // login
-  router.push('/memo/edit')
+  router.push({ pathname: '/memo/edit', params: { id } })
 }
 
 const Detail = (): JSX.Element => {
-  const { id } = useLocalSearchParams()
+  const id = String(useLocalSearchParams().id)
   console.log(id)
   const [memo, setMemo] = useState<Memo | null>(null)
   useEffect(() => {
@@ -43,7 +43,7 @@ const Detail = (): JSX.Element => {
           {memo?.bodyText}
         </Text>
       </ScrollView>
-      <CircleButton onPress={handlePress} style={{ top: 50, bottom: 'auto' }}>
+      <CircleButton onPress={() => { handlePress(id) }} style={{ top: 50, bottom: 'auto' }}>
         <Icon name='pen' size={40} color='#fff' />
       </CircleButton>
     </View>

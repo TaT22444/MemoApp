@@ -8,6 +8,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth'
 
 import Btn from '../../components/btn'
 import { auth } from '../../config'
+import Guest from './guest'
 
 const handlePress = (email: string, password: string): void => {
   // login
@@ -20,7 +21,7 @@ const handlePress = (email: string, password: string): void => {
       const { code, message } = error
       console.log(code, message)
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      Alert.alert(message)
+      Alert.alert('メールアドレスとパスワードが設定されていません')
     })
 }
 
@@ -58,6 +59,7 @@ const LogIn = (): JSX.Element => {
             </TouchableOpacity>
           </Link>
         </View>
+        <Guest></Guest>
       </View>
     </View>
   )
